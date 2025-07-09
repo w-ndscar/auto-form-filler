@@ -44,8 +44,10 @@ def browse_file():
 def show_instructions():
     instructions_window = ctk.CTkToplevel(app)
     instructions_window.title("Instructions")
-    instructions_window.geometry("620x260")
+    instructions_window.geometry("720x420")
     instructions_text = (
+        "Pre-run check: Select the correct project and ensure all elements are present.\n"
+        "If any are missing, create them before running the automation — otherwise, the 'Elements' section will appear empty.\n\n"
         "1. Click 'Open Chrome' and log in to the website\n"
         "2. Select the project and go to the Drawings tab\n"
         "3. Use 'Browse' to select your Excel file\n"
@@ -56,7 +58,7 @@ def show_instructions():
         "DO NOT click Submit/New Buttons. It will be done automatically\n"
     )
     #ctk.CTkLabel(instructions_window, text="How to Use", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(15, 10))
-    ctk.CTkTextbox(instructions_window, width=480, height=240, font=ctk.CTkFont(size=16), border_color="#d3eef7").pack(padx=20, pady=5)
+    ctk.CTkTextbox(instructions_window, width=650, height=370, font=ctk.CTkFont(size=16), border_color="#d3eef7").pack(padx=20, pady=5)
     textbox = instructions_window.winfo_children()[-1]
     textbox.insert("1.0", instructions_text)
     textbox.configure(state="disabled")
