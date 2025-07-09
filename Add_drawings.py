@@ -69,7 +69,8 @@ def load_excel(file_path, sheet_name, end_row):
     try:
         print("Load excel function called")
         total_rows = int(end_row)
-        
+        total_rows+= 1  # Adjust for 1-based indexing in Excel
+
         element = []
         sh_size = []
         st_date = []
