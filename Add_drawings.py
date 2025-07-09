@@ -56,6 +56,8 @@ def show_instructions():
         "\nTip: After entering the values, it'll wait \n"
         "Press 'Esc' key after each entry to proceed to the next \n"
         "DO NOT click Submit/New Buttons. It will be done automatically\n"
+        "\n\n\n"
+        "Created with curiosity by Arun"
     )
     #ctk.CTkLabel(instructions_window, text="How to Use", font=ctk.CTkFont(size=16, weight="bold")).pack(pady=(15, 10))
     ctk.CTkTextbox(instructions_window, width=650, height=370, font=ctk.CTkFont(size=16), border_color="#d3eef7").pack(padx=20, pady=5)
