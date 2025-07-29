@@ -182,29 +182,54 @@ def load_excel(file_path, sheet_name, start_row, end_row):
 
 # Converts CSV to XLSX and reformats (custom)
 def convert_excel(file_path):
-        
+    
+    def timedelta_to_excel_time(td):
+        total_seconds = td.total_seconds()
+        # Excel time = fraction of a day
+        return total_seconds / 86400  # 86400 seconds in a day
+
     # Store and reformat
-        print(f"File Path: '{file_path}'")
-        df = pd.read_csv(file_path, encoding='utf-8', header=2, sep=r'[\t,]', engine='python')
-        print("Reached the CSV file reading part")
-        print(df.columns)
+    print(f"File Path: '{file_path}'")
+    df = pd.read_csv(file_path, encoding='utf-8', header=2, sep=r'[\t,]', engine='python')
+    print("Reached the CSV file reading part")
+    print(df.columns)
+    
+    # Convert and format date column
+    df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y", errors='coerce')
 
-        # Convert and format date column
-        df['Date'] = pd.to_datetime(df['Date'], format="%d/%m/%Y", errors='coerce').dt.strftime("%d/%b/%Y")
+    # Convert and format time columns
+    df['Active time'] = pd.to_timedelta(df['Active time'])
+    df['Idle time'] = pd.to_timedelta(df['Idle time'])
+    
+    df['Active time'] = df['Active time'].apply(timedelta_to_excel_time)
+    df['Idle time'] = df['Idle time'].apply(timedelta_to_excel_time)
 
-        # Convert and format time columns
-        df['Active time'] = pd.to_datetime(df['Active time'], format="%H:%M:%S", errors='coerce').dt.strftime("%#H:%M")
-        df['Idle time'] = pd.to_datetime(df['Idle time'], format="%H:%M:%S", errors='coerce').dt.strftime("%#H:%M")
+    # Drop Columns
+    cols_to_drop = [2,3,4,5,6,9,10]
+    df = df.drop(df.columns[cols_to_drop], axis=1)
 
-        # Drop Columns
-        cols_to_drop = [2,3,4,5,6,9,10]
-        df = df.drop(df.columns[cols_to_drop], axis=1)
+    # Write to a new Excel file
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    df.to_excel(f"worktime_converted_{timestamp}.xlsx", index=False)
 
-        # Write to a new Excel file
-        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        df.to_excel(f"worktime_converted_{timestamp}.xlsx", index=False)
+    # Excel Manipulation
+    workbook = openpyxl.load_workbook(f"worktime_converted_{timestamp}.xlsx")
+    sheet = workbook.active
 
-        CTkMessagebox(title="Success", message="Conversion completed successfully! Saved to the current folder", icon="check")
+    headers = [cell.value for cell in sheet[1]]
+    date_col = headers.index("Date") + 1
+    active_time_col = headers.index("Active time") + 1
+    idle_time_col = headers.index("Idle time") + 1
+
+    # Applying date and time format
+    for row in sheet.iter_rows(min_row=2):
+        row[date_col - 1].number_format = "dd/mmm/yyyy"
+        row[active_time_col - 1].number_format = "h:mm"
+        row[idle_time_col - 1].number_format = "h:mm"
+
+    workbook.save(f"worktime_converted_{timestamp}.xlsx")
+
+    CTkMessagebox(title="Success", message="Conversion completed successfully! Saved to the current folder", icon="check")
 
 # Add drawing function
 def start_adding_dwg(data):
